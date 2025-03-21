@@ -5,5 +5,5 @@ enum FieldType {
     case ID;
     case URL;
     case EMAIL;
-
+    case FOREIGN;
 }

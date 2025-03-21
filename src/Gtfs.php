@@ -3,7 +3,6 @@
 namespace GdzieBusik\Gtfs;
 
 use GdzieBusik\Gtfs\Files\GtfsFile;
-use ZipArchive;
 
 class Gtfs {
     private const TEMP_ROOT = __DIR__."/tmp/gtfs/";

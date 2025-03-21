@@ -4,8 +4,6 @@ namespace GdzieBusik\Gtfs\Files;
 use GdzieBusik\Gtfs\FieldType;
 
 class AgencyFile extends GtfsFile {
-
-    protected bool $required = false;
     public string $name = "agency.txt";
 
     protected array $fields = [

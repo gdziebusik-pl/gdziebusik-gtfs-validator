@@ -26,14 +26,14 @@ abstract class GtfsFile {
 
     public function validate() {
         foreach ($this->items as $index => $item) {
-            $rowErrors = $this->validateRow($item, $index);
+            $rowErrors = $this->validateRow($item);
             if (!empty($rowErrors)) {
                 $this->errors[$index] = $rowErrors;
             }
         }
     }
 
-    private function validateRow(array $item, int $index): array {
+    private function validateRow(array $item): array {
         $errors = [];
         foreach ($this->fields as $field => $rules) {
             if (!empty($rules['required']) && (!isset($item[$field]) || trim($item[$field]) === '')) {
@@ -41,7 +41,7 @@ abstract class GtfsFile {
                 continue;
             }
             if (isset($item[$field]) && isset($rules['field_type'])) {
-                if (!$this->validateFieldType($item[$field], $rules['field_type'], $field, $index)) {
+                if (!$this->validateFieldType($item[$field], $rules)) {
                     $errors[] = "Pole '$field' ma nieprawidłowy format ({$rules['field_type']->name}).";
                 }
             }
@@ -50,19 +50,20 @@ abstract class GtfsFile {
         return $errors;
     }
 
-    private function validateFieldType($value, FieldType $type, string $field, int $index): bool {
-        return match ($type) {
-            FieldType::ID => $this->validateUniqueID($value, $field, $index),
+    private function validateFieldType($value, $rules): bool {
+        return match ($rules['field_type']) {
+            FieldType::ID => $this->validateUniqueID($value),
             FieldType::URL => empty($value) || filter_var($value, FILTER_VALIDATE_URL) !== false,
             FieldType::EMAIL => empty($value) || filter_var($value, FILTER_VALIDATE_EMAIL) !== false,
+            FieldType::FOREIGN => ,
             default => true
         };
     }
-    private function validateUniqueID($value, string $field, int $index): bool {
+    private function validateUniqueID($value): bool {
         if (in_array($value, $this->seenIds)) return false;
 
         if (in_array($value, $this->seenIds)) {
-            $this->errors[] = "Wiersz $index: Duplikat ID '$value' w polu '$field'.";
+            $this->errors[] = "Duplikat!";
             return false;
         }
 
